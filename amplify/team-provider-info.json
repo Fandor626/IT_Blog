@@ -23,6 +23,9 @@
       },
       "api": {
         "itblog": {}
+      },
+      "storage": {
+        "imagestorage": {}
       }
     }
   }
