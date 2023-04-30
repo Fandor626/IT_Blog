@@ -20,6 +20,9 @@
           "deploymentBucketName": "amplify-amplify5764ebe1f4e34-staging-134140-deployment",
           "s3Key": "amplify-builds/TestFunction-727a6c68783554777374-build.zip"
         }
+      },
+      "api": {
+        "itblog": {}
       }
     }
   }
