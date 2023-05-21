@@ -1,0 +1,39 @@
+.navigationBar {
+    background-color: #282f34;
+    height: 100%;
+    width: 100px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 150px;
+  }
+  
+  .navigationBar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .navigationBar li {
+    margin: 10px 0;
+  }
+  
+  .navigationBar a {
+    text-decoration: none;
+    color: rgb(255, 241, 241);
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+  
+  /* Styling for the main content area */
+  .content {
+    margin-left: 100px;
+    padding: 20px;
+  }
