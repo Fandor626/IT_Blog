@@ -8,7 +8,6 @@ import {
   Heading,
   Image,
   Text,
-  TextField,
   View,
 } from "@aws-amplify/ui-react";
 import { listNotes } from "../../graphql/queries";
@@ -43,19 +42,13 @@ const Article = () => {
   }
 
   async function createNote(event) {
-    event.preventDefault();
-    const form = new FormData(event.target);
-    const data = {
-      name: form.get("name"),
-      description: form.get("description"),
-    };
-    if (!!data.image) await Storage.put(data.name);
+    // if (!!eve.image) await Storage.put(data.name);
     await API.graphql({
       query: createNoteMutation,
-      variables: { input: data },
+      variables: { input: event },
     });
     fetchNotes();
-    event.target.reset();
+    // event.target.reset();
   }
 
   async function deleteNote({ id, name }) {
@@ -102,7 +95,7 @@ const Article = () => {
       </View>
       <View name="image" as="input" type="file" style={{ alignSelf: "end" }} />
       {isOpenedPopup &&
-        <ArticlePopup note={currentNote} createNote={createNote} deleteNote={deleteNote} setIsOpenedPopup={setIsOpenedPopup} />
+        <ArticlePopup note={currentNote} createNote={createNote} deleteNote={deleteNote} setIsOpenedPopup={setIsOpenedPopup} isOpened={isOpenedPopup}/>
       }
       <Button onClick={() => onClickEditButton({})}>Create </Button>
 

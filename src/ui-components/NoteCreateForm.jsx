@@ -25,23 +25,31 @@ export default function NoteCreateForm(props) {
   const initialValues = {
     name: "",
     description: "",
+    date: "",
+    header: "",
     image: "",
   };
   const [name, setName] = React.useState(initialValues.name);
   const [description, setDescription] = React.useState(
     initialValues.description
   );
+  const [date, setDate] = React.useState(initialValues.date);
+  const [header, setHeader] = React.useState(initialValues.header);
   const [image, setImage] = React.useState(initialValues.image);
   const [errors, setErrors] = React.useState({});
   const resetStateValues = () => {
     setName(initialValues.name);
     setDescription(initialValues.description);
+    setDate(initialValues.date);
+    setHeader(initialValues.header);
     setImage(initialValues.image);
     setErrors({});
   };
   const validations = {
     name: [{ type: "Required" }],
     description: [],
+    date: [],
+    header: [],
     image: [],
   };
   const runValidationTasks = async (
@@ -72,6 +80,8 @@ export default function NoteCreateForm(props) {
         let modelFields = {
           name,
           description,
+          date,
+          header,
           image,
         };
         const validationResponses = await Promise.all(
@@ -129,6 +139,8 @@ export default function NoteCreateForm(props) {
             const modelFields = {
               name: value,
               description,
+              date,
+              header,
               image,
             };
             const result = onChange(modelFields);
@@ -155,6 +167,8 @@ export default function NoteCreateForm(props) {
             const modelFields = {
               name,
               description: value,
+              date,
+              header,
               image,
             };
             const result = onChange(modelFields);
@@ -171,6 +185,62 @@ export default function NoteCreateForm(props) {
         {...getOverrideProps(overrides, "description")}
       ></TextField>
       <TextField
+        label="Date"
+        isRequired={false}
+        isReadOnly={false}
+        value={date}
+        onChange={(e) => {
+          let { value } = e.target;
+          if (onChange) {
+            const modelFields = {
+              name,
+              description,
+              date: value,
+              header,
+              image,
+            };
+            const result = onChange(modelFields);
+            value = result?.date ?? value;
+          }
+          if (errors.date?.hasError) {
+            runValidationTasks("date", value);
+          }
+          setDate(value);
+        }}
+        onBlur={() => runValidationTasks("date", date)}
+        errorMessage={errors.date?.errorMessage}
+        hasError={errors.date?.hasError}
+        {...getOverrideProps(overrides, "date")}
+      ></TextField>
+      <TextField
+        label="Header"
+        isRequired={false}
+        isReadOnly={false}
+        value={header}
+        onChange={(e) => {
+          let { value } = e.target;
+          if (onChange) {
+            const modelFields = {
+              name,
+              description,
+              date,
+              header: value,
+              image,
+            };
+            const result = onChange(modelFields);
+            value = result?.header ?? value;
+          }
+          if (errors.header?.hasError) {
+            runValidationTasks("header", value);
+          }
+          setHeader(value);
+        }}
+        onBlur={() => runValidationTasks("header", header)}
+        errorMessage={errors.header?.errorMessage}
+        hasError={errors.header?.hasError}
+        {...getOverrideProps(overrides, "header")}
+      ></TextField>
+      <TextField
         label="Image"
         isRequired={false}
         isReadOnly={false}
@@ -181,6 +251,8 @@ export default function NoteCreateForm(props) {
             const modelFields = {
               name,
               description,
+              date,
+              header,
               image: value,
             };
             const result = onChange(modelFields);

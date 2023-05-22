@@ -10,6 +10,8 @@ export const createNote = /* GraphQL */ `
       id
       name
       description
+      date
+      header
       image
       createdAt
       updatedAt
@@ -25,6 +27,8 @@ export const updateNote = /* GraphQL */ `
       id
       name
       description
+      date
+      header
       image
       createdAt
       updatedAt
@@ -40,6 +44,8 @@ export const deleteNote = /* GraphQL */ `
       id
       name
       description
+      date
+      header
       image
       createdAt
       updatedAt
