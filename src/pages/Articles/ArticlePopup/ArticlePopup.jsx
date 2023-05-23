@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Input, Modal, Textarea } from "@mantine/core";
+import { DateTimePicker } from '@mantine/dates';
 
-const ArticlePopup = ({ note, createNote, deleteNote, setIsOpenedPopup, isOpened }) => {
+const ArticlePopup = ({ note, createNote, deleteNote, setIsOpenedPopup, isOpened, updateNote }) => {
+  const [selectedDate, setSelectedDate] = useState(null);
+
   const [articleData, setArticleData] = useState({
     name: note.name || "",
     description: note.description || "",
@@ -11,16 +14,30 @@ const ArticlePopup = ({ note, createNote, deleteNote, setIsOpenedPopup, isOpened
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setArticleData((prevData) => ({ ...prevData, [name]: value }));
+    setArticleData((prevData) => ({ ...prevData, [name]: value, date: selectedDate }));
   };
+
+  const handleDateChange = (value) => {
+    setSelectedDate(value || '');
+    setArticleData((prevData) => ({ ...prevData, date: value }));
+  };
+
+  const createEditButtonText = !note.name ? 'Create Article' : 'Edit Article'
+
+  const isDataWasChanged = 
+    note.name !== articleData.name || 
+    note.header !== articleData.header || 
+    note.description !== articleData.description ||
+    note.date !== articleData.date;
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    createNote(articleData);
+    if (createEditButtonText === 'Create Article') createNote(articleData);
+    else isDataWasChanged && updateNote(articleData)
     setIsOpenedPopup(false)
-    // onClose();
   };
 
+  console.log(selectedDate, note.date)
   return (
     <Modal opened={isOpened} onClose={() => setIsOpenedPopup(false)} size="sm">
       <form onSubmit={handleSubmit}>
@@ -48,20 +65,20 @@ const ArticlePopup = ({ note, createNote, deleteNote, setIsOpenedPopup, isOpened
           required
         />
 
-        <Input
+        <DateTimePicker
           name="date"
-          value={articleData.date}
-          onChange={handleChange}
+          value={articleData.date ? new Date(articleData.date) : ''}
+          onChange={handleDateChange}
           placeholder="Date"
           required
         />
 
         <Button type="submit" variant="filled">
-          {!note.name ? 'Create Article': 'Edit Article'}
+          {createEditButtonText}
         </Button>
 
-        {<Button type="button" variant="filled">Cancel</Button>}
-        {note.name && <Button type="button" variant="filled" onClick={()=>{ deleteNote(note); setIsOpenedPopup(false)}}>Delete</Button>}
+        {<Button onClick={() => setIsOpenedPopup(false)} type="button" variant="filled">Cancel</Button>}
+        {note.name && <Button type="button" variant="filled" onClick={() => { deleteNote(note); setIsOpenedPopup(false) }}>Delete</Button>}
       </form>
     </Modal>
   );

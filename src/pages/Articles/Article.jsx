@@ -13,6 +13,7 @@ import {
 import { listNotes } from "../../graphql/queries";
 import {
   createNote as createNoteMutation,
+  updateNote as updateNoteMutation,
   deleteNote as deleteNoteMutation,
 } from "../../graphql/mutations";
 import ArticlePopup from "./ArticlePopup/ArticlePopup";
@@ -61,12 +62,20 @@ const Article = () => {
     });
   }
 
+  async function updateNote(event) {
+    const { name, description, header, date } = event;
+    await API.graphql({
+      query: updateNoteMutation,
+      variables: {input: {id: currentNote.id, name, description, header, date}}
+    })
+    fetchNotes();
+  }
+
   const onClickEditButton = (note) => {
     setIsOpenedPopup(true)
     setCurrentNote(note)
   }
 
-  console.log(currentNote)
   return (
     <View className="App">
       <Heading level={1}>My Notes App</Heading>
@@ -89,13 +98,15 @@ const Article = () => {
                 style={{ width: 400 }}
               />
             )}
+            <Text as="span">{note.header}</Text>
+            <Text as="span">{note.date}</Text>
             <Button onClick={() => onClickEditButton(note)}> Edit Article </Button>
           </Flex>
         ))}
       </View>
       <View name="image" as="input" type="file" style={{ alignSelf: "end" }} />
       {isOpenedPopup &&
-        <ArticlePopup note={currentNote} createNote={createNote} deleteNote={deleteNote} setIsOpenedPopup={setIsOpenedPopup} isOpened={isOpenedPopup}/>
+        <ArticlePopup note={currentNote} createNote={createNote} deleteNote={deleteNote} updateNote={updateNote} setIsOpenedPopup={setIsOpenedPopup} isOpened={isOpenedPopup}/>
       }
       <Button onClick={() => onClickEditButton({})}>Create </Button>
 
