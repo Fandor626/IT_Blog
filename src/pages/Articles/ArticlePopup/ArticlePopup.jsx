@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Button, Input, Modal, Textarea } from "@mantine/core";
 import { DateTimePicker } from '@mantine/dates';
+// import { RichTextEditor, Link } from '@mantine/tiptap';
+import { Select } from '@mantine/core';
 
 const ArticlePopup = ({ note, createNote, deleteNote, setIsOpenedPopup, isOpened, updateNote }) => {
   const [selectedDate, setSelectedDate] = useState(null);
@@ -24,9 +26,9 @@ const ArticlePopup = ({ note, createNote, deleteNote, setIsOpenedPopup, isOpened
 
   const createEditButtonText = !note.name ? 'Create Article' : 'Edit Article'
 
-  const isDataWasChanged = 
-    note.name !== articleData.name || 
-    note.header !== articleData.header || 
+  const isDataWasChanged =
+    note.name !== articleData.name ||
+    note.header !== articleData.header ||
     note.description !== articleData.description ||
     note.date !== articleData.date;
 
@@ -37,11 +39,12 @@ const ArticlePopup = ({ note, createNote, deleteNote, setIsOpenedPopup, isOpened
     setIsOpenedPopup(false)
   };
 
-  console.log(selectedDate, note.date)
   return (
-    <Modal opened={isOpened} onClose={() => setIsOpenedPopup(false)} size="sm">
-      <form onSubmit={handleSubmit}>
+    <Modal opened={isOpened} size='xl' onClose={() => setIsOpenedPopup(false)}>
+      <form style={{ textAlign: 'center' }} onSubmit={handleSubmit}>
+        Article popup
         <Input
+          style={{ margin: '10px' }}
           name="name"
           value={articleData.name}
           onChange={handleChange}
@@ -49,7 +52,10 @@ const ArticlePopup = ({ note, createNote, deleteNote, setIsOpenedPopup, isOpened
           required
         />
 
+        {/* <RichTextEditor/> */}
         <Textarea
+          style={{ margin: '10px' }}
+          minRows='7'
           name="description"
           value={articleData.description}
           onChange={handleChange}
@@ -59,26 +65,28 @@ const ArticlePopup = ({ note, createNote, deleteNote, setIsOpenedPopup, isOpened
 
         <Input
           name="header"
+          style={{ margin: '10px' }}
           value={articleData.header}
           onChange={handleChange}
-          placeholder="Header"
+          placeholder="Type"
           required
         />
 
         <DateTimePicker
           name="date"
+          style={{ margin: '10px' }}  
           value={articleData.date ? new Date(articleData.date) : ''}
           onChange={handleDateChange}
           placeholder="Date"
           required
         />
 
-        <Button type="submit" variant="filled">
+        <Button type="submit" style={{width:'200px', margin:'10px'}} variant="filled">
           {createEditButtonText}
         </Button>
 
-        {<Button onClick={() => setIsOpenedPopup(false)} type="button" variant="filled">Cancel</Button>}
-        {note.name && <Button type="button" variant="filled" onClick={() => { deleteNote(note); setIsOpenedPopup(false) }}>Delete</Button>}
+        {<Button onClick={() => setIsOpenedPopup(false)} type="button" style={{width:'200px', margin:'10px'}} variant="filled">Cancel</Button>}
+        {note.name && <Button type="button" variant="filled" style={{width:'200px', margin:'10px'}} onClick={() => { deleteNote(note); setIsOpenedPopup(false) }}>Delete</Button>}
       </form>
     </Modal>
   );

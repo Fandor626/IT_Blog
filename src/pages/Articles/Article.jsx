@@ -66,7 +66,7 @@ const Article = () => {
     const { name, description, header, date } = event;
     await API.graphql({
       query: updateNoteMutation,
-      variables: {input: {id: currentNote.id, name, description, header, date}}
+      variables: { input: { id: currentNote.id, name, description, header, date } }
     })
     fetchNotes();
   }
@@ -82,31 +82,39 @@ const Article = () => {
       <Heading level={2}>Current Notes</Heading>
       <View margin="3rem 0">
         {notes.map((note) => (
-          <Flex
-            key={note.id || note.name}
-            direction="row"
-            justifyContent="center"
-            alignItems="center">
-            <Text as="strong" fontWeight={700}>
-              {note.name}
-            </Text>
-            <Text as="span">{note.description}</Text>
-            {note.image && (
-              <Image
-                src={note.image}
-                alt={`visual aid for ${notes.name}`}
-                style={{ width: 400 }}
-              />
-            )}
-            <Text as="span">{note.header}</Text>
-            <Text as="span">{note.date}</Text>
-            <Button onClick={() => onClickEditButton(note)}> Edit Article </Button>
-          </Flex>
+          <>
+            <Flex
+              onClick={() => onClickEditButton(note)}
+              style={{cursor: 'pointer'}}
+              key={note.id || note.name}
+              direction="column"
+              justifyContent="center"
+              alignItems="center">
+              <Text as="strong" fontWeight={700}>
+                {note.name}
+              </Text>
+              <Text as="span">{note.description}</Text>
+              {note.image && (
+                <Image
+                  src={note.image}
+                  alt={`visual aid for ${notes.name}`}
+                  style={{ width: 400 }}
+                />
+              )}
+              {/* <Button onClick={() => onClickEditButton(note)}> Edit Article </Button> */}
+            </Flex>
+            <Flex direction="row"
+              justifyContent="center"
+              alignItems="center">
+              <Text as="span">{note.header}</Text>
+              <Text as="span">{note.date}</Text>
+            </Flex>
+          </>
         ))}
       </View>
-      <View name="image" as="input" type="file" style={{ alignSelf: "end" }} />
+      {/* <View name="image" as="input" type="file" style={{ alignSelf: "end" }} /> */}
       {isOpenedPopup &&
-        <ArticlePopup note={currentNote} createNote={createNote} deleteNote={deleteNote} updateNote={updateNote} setIsOpenedPopup={setIsOpenedPopup} isOpened={isOpenedPopup}/>
+        <ArticlePopup note={currentNote} createNote={createNote} deleteNote={deleteNote} updateNote={updateNote} setIsOpenedPopup={setIsOpenedPopup} isOpened={isOpenedPopup} />
       }
       <Button onClick={() => onClickEditButton({})}>Create </Button>
 
