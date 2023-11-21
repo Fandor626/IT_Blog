@@ -196,7 +196,6 @@ export default function NoteCreateForm(props) {
         label="Date"
         isRequired={false}
         isReadOnly={false}
-        type="date"
         value={date}
         onChange={(e) => {
           let { value } = e.target;

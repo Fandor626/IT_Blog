@@ -21,11 +21,11 @@
           "s3Key": "amplify-builds/TestFunction-727a6c68783554777374-build.zip"
         }
       },
-      "api": {
-        "itblog": {}
-      },
       "storage": {
         "imagestorage": {}
+      },
+      "api": {
+        "itblog": {}
       }
     }
   }

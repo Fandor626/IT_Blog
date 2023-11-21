@@ -1,5 +1,5 @@
 projects:
-  itblog:
+  itblog-staging:
     schemaPath: src/graphql/schema.json
     includes:
       - src/graphql/**/*.js
@@ -10,6 +10,9 @@ projects:
         codeGenTarget: javascript
         generatedFileName: ''
         docsFilePath: src/graphql
+        region: eu-north-1
+        apiId: dsoh4mwu4vbwjf6nlw6tww7fgq
+        maxDepth: 2
 extensions:
   amplify:
     version: 3
