@@ -6,7 +6,7 @@ type Note @model @auth(rules: [ { allow: public } ] ){
   id: ID!
   name: String!
   description: String
-  date: String
+  date: AWSDate
   header: String
   image: String
 }

@@ -7,10 +7,11 @@
 /* eslint-disable */
 import * as React from "react";
 import { Button, Flex, Grid, TextField } from "@aws-amplify/ui-react";
-import { getOverrideProps } from "@aws-amplify/ui-react/internal";
-import { Note } from "../models";
-import { fetchByPath, validateField } from "./utils";
-import { DataStore } from "aws-amplify";
+import { fetchByPath, getOverrideProps, validateField } from "./utils";
+import { generateClient } from "aws-amplify/api";
+import { getNote } from "../graphql/queries";
+import { updateNote } from "../graphql/mutations";
+const client = generateClient();
 export default function NoteUpdateForm(props) {
   const {
     id: idProp,
@@ -53,7 +54,12 @@ export default function NoteUpdateForm(props) {
   React.useEffect(() => {
     const queryData = async () => {
       const record = idProp
-        ? await DataStore.query(Note, idProp)
+        ? (
+            await client.graphql({
+              query: getNote.replaceAll("__typename", ""),
+              variables: { id: idProp },
+            })
+          )?.data?.getNote
         : noteModelProp;
       setNoteRecord(record);
     };
@@ -94,10 +100,10 @@ export default function NoteUpdateForm(props) {
         event.preventDefault();
         let modelFields = {
           name,
-          description,
-          date,
-          header,
-          image,
+          description: description ?? null,
+          date: date ?? null,
+          header: header ?? null,
+          image: image ?? null,
         };
         const validationResponses = await Promise.all(
           Object.keys(validations).reduce((promises, fieldName) => {
@@ -123,21 +129,26 @@ export default function NoteUpdateForm(props) {
         }
         try {
           Object.entries(modelFields).forEach(([key, value]) => {
-            if (typeof value === "string" && value.trim() === "") {
-              modelFields[key] = undefined;
+            if (typeof value === "string" && value === "") {
+              modelFields[key] = null;
             }
           });
-          await DataStore.save(
-            Note.copyOf(noteRecord, (updated) => {
-              Object.assign(updated, modelFields);
-            })
-          );
+          await client.graphql({
+            query: updateNote.replaceAll("__typename", ""),
+            variables: {
+              input: {
+                id: noteRecord.id,
+                ...modelFields,
+              },
+            },
+          });
           if (onSuccess) {
             onSuccess(modelFields);
           }
         } catch (err) {
           if (onError) {
-            onError(modelFields, err.message);
+            const messages = err.errors.map((e) => e.message).join("\n");
+            onError(modelFields, messages);
           }
         }
       }}
@@ -204,6 +215,7 @@ export default function NoteUpdateForm(props) {
         label="Date"
         isRequired={false}
         isReadOnly={false}
+        type="date"
         value={date}
         onChange={(e) => {
           let { value } = e.target;
