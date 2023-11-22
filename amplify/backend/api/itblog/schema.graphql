@@ -9,4 +9,45 @@ type Note @model @auth(rules: [ { allow: public } ] ){
   date: String
   header: String
   image: String
+  categoryId: String
+  userId: String
+}
+
+type Role @model @auth(rules: [ { allow: public } ] ){
+  id: ID!
+  name: String
+}
+
+type Settings @model @auth(rules: [ { allow: public } ] ){
+  id: ID!
+  userId: String
+  language: String
+}
+
+type Comments @model @auth(rules: [ { allow: public } ] ){
+  id: ID!
+  content: String
+  userId: String
+  articleId: String
+}
+
+type Tag @model @auth(rules: [ { allow: public } ] ){
+  id: ID!
+  name: String
+}
+
+type Category @model @auth(rules: [ { allow: public } ] ){
+  id: ID!
+  name: String
+}
+
+type User @model @auth(rules: [ { allow: public } ] ){
+  id: ID!
+  firstName: String
+  secondName: String
+  email: String
+  articleIds: [String]
+  commentIds: [String]
+  roleId: String
+  settingsId: String
 }
