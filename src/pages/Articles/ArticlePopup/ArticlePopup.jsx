@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Button, Input, Modal, Textarea } from "@mantine/core";
+import { Input, Modal, Textarea } from "@mantine/core";
+import { Button } from "@aws-amplify/ui-react";
 import { DateTimePicker } from '@mantine/dates';
 // import { RichTextEditor, Link } from '@mantine/tiptap';
 import { Select } from '@mantine/core';
 
-const ArticlePopup = ({ note, createNote, deleteNote, setIsOpenedPopup, isOpened, updateNote }) => {
+const ArticlePopup = ({ note, createNote, setIsDeleteClicked, setIsOpenedPopup, isOpened, updateNote }) => {
   const [selectedDate, setSelectedDate] = useState(null);
 
   const [articleData, setArticleData] = useState({
@@ -74,19 +75,19 @@ const ArticlePopup = ({ note, createNote, deleteNote, setIsOpenedPopup, isOpened
 
         <DateTimePicker
           name="date"
-          style={{ margin: '10px' }}  
+          style={{ margin: '10px' }}
           value={articleData.date ? new Date(articleData.date) : ''}
           onChange={handleDateChange}
           placeholder="Date"
           required
         />
 
-        <Button type="submit" style={{width:'200px', margin:'10px'}} variant="filled">
+        <Button type="submit" style={{ width: '200px', margin: '10px' }}  >
           {createEditButtonText}
         </Button>
 
-        {<Button onClick={() => setIsOpenedPopup(false)} type="button" style={{width:'200px', margin:'10px'}} variant="filled">Cancel</Button>}
-        {note.name && <Button type="button" variant="filled" style={{width:'200px', margin:'10px'}} onClick={() => { deleteNote(note); setIsOpenedPopup(false) }}>Delete</Button>}
+        {<Button onClick={() => setIsOpenedPopup(false)} type="button" style={{ width: '200px', margin: '10px' }} >Cancel</Button>}
+        {note.name && <Button type="button" style={{ width: '200px', margin: '10px', color: 'red' }} onClick={() => { setIsDeleteClicked(true); setIsOpenedPopup(false) }}>Delete</Button>}
       </form>
     </Modal>
   );

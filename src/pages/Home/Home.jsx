@@ -1,9 +1,9 @@
 import React from "react";
-
+import Article from "../Articles/Article";
 const Home = () => {
   return (
     <div>
-        "Home page"
+        <Article home={true}/>
     </div>
   );
 };

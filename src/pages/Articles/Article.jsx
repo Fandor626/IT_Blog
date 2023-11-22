@@ -10,6 +10,7 @@ import {
   Text,
   View,
 } from "@aws-amplify/ui-react";
+import { Modal } from "@mantine/core"
 import { listNotes } from "../../graphql/queries";
 import {
   createNote as createNoteMutation,
@@ -17,11 +18,24 @@ import {
   deleteNote as deleteNoteMutation,
 } from "../../graphql/mutations";
 import ArticlePopup from "./ArticlePopup/ArticlePopup";
+import FullArticle from "./FullArticle/FullArticle.tsx";
 
-const Article = () => {
+// type Note = {
+//   id: string;
+//   name: string;
+//   description: string;
+//   image: any;
+//   header: string;
+//   date: string;
+// };
+
+const Article = ({home}) => {
+  console.log(home)
   const [notes, setNotes] = useState([]);
   const [currentNote, setCurrentNote] = useState({});
   const [isOpenedPopup, setIsOpenedPopup] = useState(false);
+  const [isOpenedFullArticle, setIsOpenedFullArticle] = useState(false);
+  const [isDeleteClicked, setIsDeleteClicked] = useState(false);
 
   useEffect(() => {
     fetchNotes();
@@ -39,7 +53,7 @@ const Article = () => {
         return note;
       })
     );
-    setNotes(notesFromAPI);
+    setNotes(notesFromAPI.sort((a, b) => new Date(b.date) - new Date(a.date)).map(note => { return { ...note, date: new Date(note.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) } }));
   }
 
   async function createNote(event) {
@@ -53,7 +67,7 @@ const Article = () => {
   }
 
   async function deleteNote({ id, name }) {
-    const newNotes = notes.filter((note) => note.id !== id);
+    const newNotes = notes?.filter((note) => note.id !== id);
     setNotes(newNotes);
     await Storage.remove(name);
     await API.graphql({
@@ -66,58 +80,108 @@ const Article = () => {
     const { name, description, header, date } = event;
     await API.graphql({
       query: updateNoteMutation,
-      variables: { input: { id: currentNote.id, name, description, header, date } }
-    })
+      variables: {
+        input: { id: currentNote?.id, name, description, header, date },
+      },
+    });
     fetchNotes();
   }
 
   const onClickEditButton = (note) => {
-    setIsOpenedPopup(true)
+    setIsOpenedPopup(true);
+    setCurrentNote(note);
+  };
+
+  const onClickDeleteButton = (note) => {
+    setIsDeleteClicked(true)
     setCurrentNote(note)
   }
 
   return (
     <View className="App">
-      <Heading level={1}>My Notes App</Heading>
-      <Heading level={2}>Current Notes</Heading>
+      <Heading level={1}>{home ? 'Home' : 'Articles'}</Heading>
       <View margin="3rem 0">
-        {notes.map((note) => (
-          <>
-            <Flex
-              onClick={() => onClickEditButton(note)}
-              style={{cursor: 'pointer'}}
+        {notes?.map((note) => (
+          <div style={{ display: "flex" }}>
+            <div
               key={note.id || note.name}
-              direction="column"
-              justifyContent="center"
-              alignItems="center">
-              <Text as="strong" fontWeight={700}>
-                {note.name}
-              </Text>
-              <Text as="span">{note.description}</Text>
+              className="Flex"
+              onClick={() => { setIsOpenedFullArticle(true); setCurrentNote(note) }}
+            >
+              <Flex
+                direction="column"
+                alignItems="center"
+                className="ArticleDetails"
+              >
+                <Text as="strong" fontWeight={700}>
+                  {note.name}
+                </Text>
+                <Text as="span" style={{ textAlign: 'start' }}>{note.description.slice(0, 100)}</Text>
+              </Flex>
               {note.image && (
                 <Image
                   src={note.image}
-                  alt={`visual aid for ${notes.name}`}
-                  style={{ width: 400 }}
+                  alt={`visual aid for ${note.name}`}
+                  className="Image"
                 />
               )}
-              {/* <Button onClick={() => onClickEditButton(note)}> Edit Article </Button> */}
-            </Flex>
-            <Flex direction="row"
-              justifyContent="center"
-              alignItems="center">
-              <Text as="span">{note.header}</Text>
-              <Text as="span">{note.date}</Text>
-            </Flex>
-          </>
+              <Flex
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                className="ArticleDetails"
+              >
+                <Text as="span">{note.header}</Text>
+                <Text as="span">{new Date(note.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</Text>
+              </Flex>
+            </div>
+            {!home && <div className="buttons">
+              <Button onClick={() => onClickEditButton(note)}>Edit</Button>
+              <Button style={{ color: "red" }} onClick={() => onClickDeleteButton(note)}>Delete</Button>
+            </div>}
+          </div>
         ))}
       </View>
-      {/* <View name="image" as="input" type="file" style={{ alignSelf: "end" }} /> */}
-      {isOpenedPopup &&
-        <ArticlePopup note={currentNote} createNote={createNote} deleteNote={deleteNote} updateNote={updateNote} setIsOpenedPopup={setIsOpenedPopup} isOpened={isOpenedPopup} />
-      }
-      <Button onClick={() => onClickEditButton({})}>Create </Button>
-
+      {isOpenedPopup && (
+        <div className="PopupOverlay">
+          <div className="PopupContent">
+            <span
+              className="CloseButton"
+              onClick={() => setIsOpenedPopup(false)}
+            >
+              &times;
+            </span>
+            {/* Pass necessary props to ArticlePopup */}
+            <ArticlePopup
+              note={currentNote}
+              createNote={createNote}
+              setIsDeleteClicked={setIsDeleteClicked}
+              updateNote={updateNote}
+              setIsOpenedPopup={setIsOpenedPopup}
+              isOpened={isOpenedPopup}
+            />
+          </div>
+        </div>
+      )}
+      {isOpenedFullArticle && (
+        <FullArticle
+          isOpened={isOpenedFullArticle}
+          onClose={() => setIsOpenedFullArticle(false)}
+          date={currentNote.date}
+          header={currentNote.name}
+          text={currentNote.description}
+          type={currentNote.header}
+        />
+      )}
+      {isDeleteClicked && (<Modal opened={isDeleteClicked} onClose={() => setIsDeleteClicked(false)}>
+        <Heading level={5} style={{ textAlign: 'center' }}> Delete Article</Heading>
+        <Text style={{ margin: '20px 0', textAlign: 'center' }}>Are you sure you want to delete Article?</Text>
+        <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'row', justifyContent: 'space-around' }}>
+          <Button style={{ color: 'red' }} onClick={() => deleteNote(currentNote).then(() => setIsDeleteClicked(false))}>Delete</Button>
+          <Button style={{ color: 'green' }} onClick={() => setIsDeleteClicked(false)}>Cancel</Button>
+        </div>
+      </Modal>)}
+      {!home && <Button onClick={() => onClickEditButton({})}>Create </Button>}
     </View>
   );
 };
